@@ -336,6 +336,26 @@ public partial class MainWindow : Window
         Log("停止要求を受け付けました。");
     }
 
+    private void CopyLog_Click(object sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(LogTextBox.Text))
+        {
+            RunStateText.Text = "コピーする操作ログがありません。";
+            return;
+        }
+
+        try
+        {
+            Clipboard.SetText(LogTextBox.Text);
+            RunStateText.Text = "操作ログをクリップボードにコピーしました。";
+        }
+        catch (Exception ex)
+        {
+            RunStateText.Text = "ログのコピーに失敗しました。";
+            Log("クリップボードへのコピーに失敗: " + ex.Message);
+        }
+    }
+
     private void Log(string message)
     {
         if (LogTextBox is null)
