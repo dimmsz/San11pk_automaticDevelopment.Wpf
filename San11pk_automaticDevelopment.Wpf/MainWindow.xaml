@@ -78,7 +78,15 @@
                 <Button Content="停止（Ctrl+Shift+0）" Click="Stop_Click" Padding="12,7"/>
                 <TextBlock x:Name="RunStateText" Text="待機中" VerticalAlignment="Center" Margin="14,0,0,0"/>
             </StackPanel>
-            <TextBlock Text="操作ログ" FontWeight="Bold" FontSize="16" Margin="0,8,0,8"/>
+            <Grid Margin="0,8,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="操作ログ" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="ログをコピー" Click="CopyLog_Click"
+                        Padding="12,6" HorizontalAlignment="Right"/>
+            </Grid>
             <TextBox x:Name="LogTextBox" Height="170" IsReadOnly="True"
                      FontFamily="Consolas" FontSize="12" Padding="8"
                      VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
