@@ -8,7 +8,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="18">
             <TextBlock Text="三國志11PK｜自動内政 操作テスト" FontSize="23" FontWeight="Bold"/>
-            <TextBlock Text="まずは画面座標の記録と右クリック→内政→募兵→実行を検証します。ゲーム本体は変更しません。"
+            <TextBlock Text="まずは画面座標の記録と都市を左クリック→内政→募兵→実行を検証します。ゲーム本体は変更しません。"
                        Margin="0,7,0,14" Foreground="#555B66" TextWrapping="Wrap"/>
             <Border Background="#FFF2E8" Padding="11" CornerRadius="6" Margin="0,0,0,14">
                 <TextBlock Text="実ゲーム未検証の試作品です。最初はドライランで確認し、実際のクリック操作は必ずゲーム画面を見ながら行ってください。"
@@ -31,7 +31,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="245"/><ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Ctrl+Shift+1　① 右クリック位置"/>
+                        <TextBlock Text="Ctrl+Shift+1　① 都市クリック位置"/>
                         <TextBlock x:Name="Step1Text" Grid.Column="1" Text="未設定"/>
                     </Grid>
                     <Grid Margin="0,0,0,7">
@@ -71,7 +71,7 @@
             <TextBlock Text="チェックOFFなら座標をログに出力するだけです。ONの場合、ゲームを前面にしてマウスを操作します。"
                        Foreground="#555B66" Margin="0,8,0,10" TextWrapping="Wrap"/>
             <WrapPanel>
-                <Button x:Name="RunOneButton" Content="① 右クリックのみ" Click="RunOne_Click" Padding="12,8" Margin="0,0,8,8"/>
+                <Button x:Name="RunOneButton" Content="① 都市を左クリックのみ" Click="RunOne_Click" Padding="12,8" Margin="0,0,8,8"/>
                 <Button x:Name="RunThreeButton" Content="①～③ 募兵メニューまで" Click="RunThree_Click" Padding="12,8" Margin="0,0,8,8"/>
                 <Button x:Name="RunFourButton" Content="①～④ 実行まで" Click="RunFour_Click" Padding="12,8" Margin="0,0,8,8"/>
             </WrapPanel>

@@ -130,7 +130,7 @@ public partial class MainWindow : Window
 
     private void UpdateCalibrationUi()
     {
-        Step1Text.Text = _profile.ContextMenu?.ToString() ?? "未設定";
+        Step1Text.Text = _profile.CityClick?.ToString() ?? "未設定";
         Step2Text.Text = _profile.DomesticMenu?.ToString() ?? "未設定";
         Step3Text.Text = _profile.RecruitMenu?.ToString() ?? "未設定";
         Step4Text.Text = _profile.ConfirmButton?.ToString() ?? "未設定";
@@ -147,6 +147,23 @@ public partial class MainWindow : Window
                 return;
             _profile = JsonSerializer.Deserialize<CalibrationProfile>(
                            File.ReadAllText(_calibrationFile)) ?? new CalibrationProfile();
+
+            if (_profile.ConfigurationVersion < 2)
+            {
+                bool hadCalibration = _profile.ClientWidth > 0 || _profile.ClientHeight > 0 ||
+                                      _profile.CityClick is not null || _profile.DomesticMenu is not null ||
+                                      _profile.RecruitMenu is not null || _profile.ConfirmButton is not null;
+                string processName = _profile.ProcessName;
+                _profile = new CalibrationProfile
+                {
+                    ConfigurationVersion = 2,
+                    ProcessName = processName
+                };
+                SaveCalibration();
+                if (hadCalibration)
+                    Log("右クリック方式の旧座標を初期化しました。都市を左クリックする位置から4か所を記録し直してください。");
+            }
+
             ProcessNameTextBox.Text = _profile.ProcessName;
         }
         catch (Exception ex)
@@ -160,6 +177,7 @@ public partial class MainWindow : Window
     {
         try
         {
+            _profile.ConfigurationVersion = 2;
             Directory.CreateDirectory(Path.GetDirectoryName(_calibrationFile)!);
             File.WriteAllText(_calibrationFile,
                 JsonSerializer.Serialize(_profile, new JsonSerializerOptions { WriteIndented = true }));
@@ -284,7 +302,7 @@ public partial class MainWindow : Window
         {
             Log($"ドライラン（{stepCount} 手順）。ゲームへの入力は行いません。");
             for (int step = 1; step <= stepCount; step++)
-                Log($"  {step}: {(step == 1 ? "右クリック" : "左クリック")} / {_profile.GetPoint(step)}");
+                Log($"  {step}: {"左クリック"} / {_profile.GetPoint(step)}");
             return;
         }
 
@@ -331,8 +349,8 @@ public partial class MainWindow : Window
 
                 await Task.Delay(120, cancellation.Token);
                 EnsureGameForeground(gamePid);
-                Win32.Click(right: step == 1);
-                Log($"手順 {step} 完了：{(step == 1 ? "右" : "左")}クリック {point}");
+                Win32.Click(right: false);
+                Log($"手順 {step} 完了：{"左"}クリック {point}");
 
                 if (step < stepCount)
                     await Task.Delay(delayMs, cancellation.Token);

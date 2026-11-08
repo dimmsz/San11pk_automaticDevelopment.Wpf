@@ -11,16 +11,17 @@ public sealed class ClickPoint
 public sealed class CalibrationProfile
 {
     public string ProcessName { get; set; } = "San11WPK";
+    public int ConfigurationVersion { get; set; }
     public int ClientWidth { get; set; }
     public int ClientHeight { get; set; }
-    public ClickPoint? ContextMenu { get; set; }
+    public ClickPoint? CityClick { get; set; }
     public ClickPoint? DomesticMenu { get; set; }
     public ClickPoint? RecruitMenu { get; set; }
     public ClickPoint? ConfirmButton { get; set; }
 
     public ClickPoint? GetPoint(int step) => step switch
     {
-        1 => ContextMenu,
+        1 => CityClick,
         2 => DomesticMenu,
         3 => RecruitMenu,
         4 => ConfirmButton,
@@ -31,7 +32,7 @@ public sealed class CalibrationProfile
     {
         switch (step)
         {
-            case 1: ContextMenu = point; break;
+            case 1: CityClick = point; break;
             case 2: DomesticMenu = point; break;
             case 3: RecruitMenu = point; break;
             case 4: ConfirmButton = point; break;
