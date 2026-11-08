@@ -170,6 +170,34 @@ public partial class MainWindow : Window
         }
     }
 
+    private void InspectGameWindow_Click(object sender, RoutedEventArgs e)
+    {
+        string processName = GameWindowService.NormalizeProcessName(ProcessNameTextBox.Text);
+        if (string.IsNullOrWhiteSpace(processName))
+        {
+            Log("プロセス名を入力してください。");
+            return;
+        }
+
+        if (!GameWindowService.TryFindGame(processName, out nint gameHandle, out uint gamePid))
+        {
+            Log($"ゲームウィンドウが見つかりません（プロセス名: {processName}）。");
+            return;
+        }
+
+        if (!Win32.GetClientRect(gameHandle, out var clientRect) ||
+            clientRect.Width <= 0 || clientRect.Height <= 0)
+        {
+            Log($"ゲームウィンドウは見つかりましたが、描画領域サイズを取得できません。PID={gamePid}, HWND=0x{gameHandle.ToInt64():X}。最小化中でないか確認してください。");
+            return;
+        }
+
+        Log($"ゲーム描画領域を取得: {clientRect.Width} × {clientRect.Height} (PID={gamePid}, HWND=0x{gameHandle.ToInt64():X})");
+        Log(_profile.ClientWidth > 0 && _profile.ClientHeight > 0
+            ? $"記録済みの基準サイズ: {_profile.ClientWidth} × {_profile.ClientHeight} / {_profile.ProcessName}"
+            : "座標キャリブレーションは未設定です。ゲーム上で Ctrl+Shift+1～4 を使って座標を記録してください。");
+    }
+
     private void ClearCalibration_Click(object sender, RoutedEventArgs e)
     {
         if (_runCancellation is not null)
@@ -213,10 +241,24 @@ public partial class MainWindow : Window
         }
 
         if (!Win32.GetClientRect(gameHandle, out var clientRect) ||
-            clientRect.Width != _profile.ClientWidth ||
+            clientRect.Width <= 0 || clientRect.Height <= 0)
+        {
+            Log($"ゲームウィンドウは見つかりましたが描画領域を取得できません（PID={gamePid}, HWND=0x{gameHandle.ToInt64():X}）。最小化中でないか確認してください。");
+            return;
+        }
+
+        Log($"ゲーム描画領域: {clientRect.Width} × {clientRect.Height} (PID={gamePid}) / 記録済み: {_profile.ClientWidth} × {_profile.ClientHeight}");
+
+        if (_profile.ClientWidth <= 0 || _profile.ClientHeight <= 0)
+        {
+            Log("座標がまだ記録されていません。ゲームの画面で Ctrl+Shift+1～4 を使い、必要な位置を記録してください。");
+            return;
+        }
+
+        if (clientRect.Width != _profile.ClientWidth ||
             clientRect.Height != _profile.ClientHeight)
         {
-            Log("画面サイズが記録時と異なります。座標を取り直してください。");
+            Log($"画面サイズが不一致です。現在: {clientRect.Width} × {clientRect.Height} / 記録時: {_profile.ClientWidth} × {_profile.ClientHeight}。画面サイズを戻すか、座標を記録し直してください。");
             return;
         }
 
